@@ -1,4 +1,7 @@
-cookies.*
+cookies*
+headers*
+*.html
+*.png
 
 *.o
 *.swp_
