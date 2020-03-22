@@ -1,17 +1,50 @@
 These are my solutions to the Project Euler exercises
 
-Also, there are my scripts to automatically download 
-and submit problems. The captcha has to be solved by 
-user (maybe I'll add some OCR later, for now I want 
-these scripts to be limited but reliable), but it's 
-still pretty convenient to use
+Also, there are my scripts to automatically log into
+the webstie, fetch problems and submit answers. The
+captcha has to be solved by user (maybe I'll add some
+OCR later, for now I want these scripts to be limited,
+but reliable), but it's still pretty convenient to use
 
 fetch_captcha.sh and get_submit_token.sh are just two 
 auxiliary scripts
 
 
 Installation:
-Make sure to run `chmod +x` for all of the scripts
+The main dependency is `ifne` command from `moreutils`
+package and it's only used once, in `get_submit_token.sh`
+
+If you want to use login.sh script, put your creds
+to credentials.txt using the following format:
+"LOGIN\nPASSWORD"
+
+Otherwise, log into Project Euler using your browser
+and use its developer tools to find the headers of
+requests sent (including the cookie with your session
+ID) and copy them into headers.txt
+
+Also, make sure to perform `chmod +x` on all the scripts
+
+
+Usage notes:
+Make sure to use `./get_submit_token $prob_n` only on
+problems you haven't answered yet - there's no submit
+token for already answered problems. It doesn't break
+anything, but no output might suggest that you aren't
+logged in or the script doesn't work, whereas probably
+it just couldn't have worked
+
+If you're not sure if you're logged in, try to fetch
+the /account tab using ./fetch_account_tab. After taking
+a look at the fetched HTML, you should be able to tell.
+
+You can either use some casual browser headers in
+cookies.txt (ex. these provided in this repo) AND
+a cookie in cookies.txt OR you can pass the cookie
+through a correct header. All the scripts should work
+properly regardless of the option, but the default one
+here is normal headers + a cookie, because this way
+you can log in by ./login.sh
 
 Examples:
 
