@@ -1,6 +1,9 @@
 #!/bin/bash
+file_headers="headers.txt"
+file_cookies="cookies"
+euler="https://projecteuler.net"
 
-curl https://projecteuler.net/account \
-	--compressed -sH @headers.txt --cookie cookies \
+curl "$euler/account" \
+	--compressed -sH @"$file_headers" --cookie "$file_cookies" \
 	| vim -
 
