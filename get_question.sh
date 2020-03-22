@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source config.sh
 
 curl "$euler/problem=$1" -s \
