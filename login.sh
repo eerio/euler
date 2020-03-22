@@ -1,23 +1,21 @@
 #!/bin/bash
+source config.sh
 
-file="credentials.txt"
-out_file="response.html"
+user="$(head -1 $file_credentials | head -c -1)"
+pass="$(tail -1 $file_credentials | head -c -1)"
 
-user="$(head -1 $file | head -c -1)"
-pass="$(tail -1 $file | head -c -1)"
-
-curl https://projecteuler.net/captcha/show_captcha.php?0 \
-	--cookie-jar cookies -o captcha.png -s
+curl "$euler/captcha/show_captcha.php?" \
+	--cookie-jar "$file_cookies" -o "$file_captcha" -s
 
 ./view_captcha.sh
 
 read -p "Enter captcha:" cap
 
-curl https://projecteuler.net/sign_in \
-	--cookie cookies  -L -o $out_file -s \
+curl "$euler/sign_in" \
+	--cookie "$file_cookies"  -L -o "$file_html" -s \
 	-d "username=$user&password=$pass&captcha=$cap&sign_in=Sign+In"
 
-if grep -q "Sign in successful" $out_file; then
+if grep -q "Sign in successful" "$file_html"; then
 	echo "Sign in successful"
 	exit 0
 else
