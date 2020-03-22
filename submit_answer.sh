@@ -1,44 +1,49 @@
 #!/bin/bash
 
-cookie_file="cookies"
-file="response.html"
+file_cookies="cookies"
+file_html="response.html"
+file_captcha="captcha.png"
+euler="https://projecteuler.net"
+file_headers="headers.txt"
 
-read -p "Type problem number:" prob
-
+read -p "Enter problem number:" prob
+tok=$(./get_submit_token.sh $prob)
 if [ $? -eq 1 ]; then
 	echo "Unable to get a submit token"
 	exit 1
 fi
 
-read -p "Type answer:" ans
 
-tok=$(./get_submit_token.sh $prob)
+read -p "Enter answer:" ans
+
+
 ./fetch_captcha.sh
-read -p "Solve captcha:" cap
+./view_captcha.sh
+read -p "Enter captcha:" cap
+rm "$file_captcha"
 
 
 data="guess_$prob=$ans&submit_token=$tok&captcha=$cap"
 
-echo $data
+curl "$euler/problem=$prob" \
+	-H @"$file_headers" --cookie "$file_cookies" \
+	-d "$data" \
+	--compressed -Ls -o "$file_html"
 
-curl https://projecteuler.net/problem=$prob \
-	-H @headers.txt --cookie $cookie_file \
-	-d $data \
-	--compressed -Ls -o $file
 
-if grep -q "<p>Sorry, but the answer you gave appears to be incorrect.</p>" $file; then
+if grep -q "<p>Sorry, but the answer you gave appears to be incorrect.</p>" "$file_html"; then
 	echo "Incorrect!"
 	exit 1
-elif grep -q "<p>Congratulations, the answer you gave to problem $prob is correct.</p>" $file; then
+elif grep -q "<p>Congratulations, the answer you gave to problem $prob is correct.</p>" "$file_html"; then
 	echo "Correct!"
 	exit 1
-elif grep -q "An error occurred whilst trying to submit your guess<br>Please try again" $file; then
+elif grep -q "An error occurred whilst trying to submit your guess<br>Please try again" "$file_html"; then
 	echo "An error occured :("
 	exit 1
-elif grep -q '<div id="message" class="noprint">The confirmation code you entered was not valid</div>' $file; then
+elif grep -q '<div id="message" class="noprint">The confirmation code you entered was not valid</div>' "$file_html"; then
 	echo "Invalid captcha"
 	exit 1
 else
-	echo "Unknown error. Check $file and look what's going on"
+	echo "Unknown error. Check $file_html and look what's going on"
 fi
 
