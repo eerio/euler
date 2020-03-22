@@ -1,7 +1,5 @@
 #!/bin/bash
-file_headers="headers.txt"
-file_cookies="cookies"
-euler="https://projecteuler.net"
+source config.sh
 
 curl "$euler/account" \
 	--compressed -sH @"$file_headers" --cookie "$file_cookies" \

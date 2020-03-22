@@ -1,10 +1,6 @@
 #!/bin/bash
 
-file_cookies="cookies"
-file_html="response.html"
-file_captcha="captcha.png"
-euler="https://projecteuler.net"
-file_headers="headers.txt"
+source config.sh
 
 read -p "Enter problem number:" prob
 tok=$(./get_submit_token.sh $prob)

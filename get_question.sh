@@ -1,5 +1,5 @@
 #!/bin/sh
-euler="https://projecteuler.net"
+source config.sh
 
 curl "$euler/problem=$1" -s \
 	| sed -n '/<div class="problem_content"/,/<\/div>/p' \
