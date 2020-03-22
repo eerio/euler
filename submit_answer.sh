@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cookie_file="cookies"
 file="response.html"
 
 read -p "Type problem number:" prob
@@ -11,7 +12,7 @@ tok=$(./get_submit_token.sh $prob)
 read -p "Solve captcha:" cap
 
 curl https://projecteuler.net/problem=$prob \
-	-H @headers.txt \
+	-H @headers.txt --cookie $cookie_file \
 	-d "guess_$prob=$ans&submit_token=$tok&captcha=$cap" \
 	--compressed -Ls -o $file
 

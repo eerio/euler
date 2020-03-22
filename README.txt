@@ -38,9 +38,9 @@ If you're not sure if you're logged in, try to fetch
 the /account tab using ./fetch_account_tab. After taking
 a look at the fetched HTML, you should be able to tell.
 
-You can either use some casual browser headers in
-cookies.txt (ex. these provided in this repo) AND
-a cookie in cookies.txt OR you can pass the cookie
+You can either {use some casual browser headers in
+the `cookies` file (ex. these provided in this repo)
+AND a cookie in `cookies`} OR you can pass the cookie
 through a correct header. All the scripts should work
 properly regardless of the option, but the default one
 here is normal headers + a cookie, because this way
