@@ -2,7 +2,7 @@ cookies*
 headers*
 credentials*
 *.html
-*.png
+captcha*
 
 *.o
 *.swp_
