@@ -11,8 +11,7 @@ auxiliary scripts
 
 
 Installation:
-The main dependency is `ifne` command from `moreutils`
-package and it's only used once, in `get_submit_token.sh`
+Dependencies: imagemagick, jp2a, moreutils
 
 If you want to use login.sh script, put your creds
 to credentials.txt using the following format:
