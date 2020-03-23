@@ -60,6 +60,7 @@ of the even-valued terms.
 $ ./submit_answer.sh
 Type problem number:11
 Type answer:666
+<HERE COMES AN ASCII-ART CAPTCHA!>
 Solve captcha:42069
 Incorrect!
 
