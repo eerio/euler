@@ -41,14 +41,19 @@ clean() {
 	rm -f "$file_captcha" "$captcha_jpg" "$file_html"
 }
 
+# I just need it separated; login() has to have it explicitly
+view_captcha() {
+	convert "$file_captcha" "$captcha_jpg"
+	jp2a "$captcha_jpg" -z --color --chars='..00xx@@'
+}
+
 # Fetch captcha. PE server keeps track of ids of captcha you've requested and
 # expects you to submit the last one, so use this function carefully
 get_captcha() {
 	curl -s "$euler/captcha/show_captcha.php?" \
 		-H @"$file_headers" --cookie "$file_cookies" -o "$file_captcha"
 
-	convert "$file_captcha" "$captcha_jpg"
-	jp2a "$captcha_jpg" -z --color --chars='..00xx@@'
+	view_captcha
 }
 
 
@@ -93,15 +98,12 @@ login() {
 		echo "No credentials file $file_credentials!"
 		exit 1
 	fi
-
 	user="$(head -1 $file_credentials | head -c -1)"
 	pass="$(tail -1 $file_credentials | head -c -1)"
 
-	#curl "$euler/captcha/show_captcha.php?" \
-	#        --cookie-jar "$file_cookies" -o "$file_captcha" -s
-
-	get_captcha
-
+	curl "$euler/captcha/show_captcha.php?" \
+	        --cookie-jar "$file_cookies" -o "$file_captcha" -s
+	view_captcha
 	read -p "Enter captcha:" cap
 
 	curl "$euler/sign_in" \
@@ -112,7 +114,7 @@ login() {
 	        echo "Sign in successful"
 		exit 0
 	else
-		echo "Something went wrong. Look at the content of $out_file"
+		echo "Something went wrong. Look at the content of $file_html"
 		exit 1
 	fi
 }
