@@ -21,30 +21,20 @@ ID) and copy them into headers.txt
 The default way is using headers with session ID stripped
 (e.g. these provided in this repo) + a valid cookie (e.g.
 obtained by running `euler login`)
-
+ 
 How to test:
 1. fetch some questions
 $ ./euler prob 7
-By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13,
-we can see that the 6th prime is 13. What is the 10 001st prime number?
-
 2. fetch account tab - it should be a generic html doc
    with options like 'Sign in' etc
 $ ./euler account
-
 3. sign in to Project Euler
 $ ./euler login
-
 4. fetch account tab again - there SHOLD be some settings to set etc.
 5. give some stupid answers to a few questions and check if you get to a point
    where it tells you that the answer is invalid (or even valid if you're
    lucky enough :p)
 $ ./euler submit
-Enter problem number:69
-Enter answer:420
-<ASCII-art>
-Enter captcha:25348
-Incorrect!
 
 Usage notes:
 
