@@ -22,8 +22,6 @@ and use its developer tools to find the headers of
 requests sent (including the cookie with your session
 ID) and copy them into headers.txt
 
-Also, make sure to perform `chmod +x` on all the scripts
-
 
 Usage notes:
 Make sure to use `./get_submit_token $prob_n` only on
