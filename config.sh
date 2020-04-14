@@ -1,5 +1,3 @@
-#!/bin/bash
-
 euler="https://projecteuler.net"
 file_html="response.html"
 file_headers="headers.txt"
