@@ -1,5 +1,26 @@
 #!/bin/sh
-source config.sh
+
+# URL to Project Euler's website
+euler="https://projecteuler.net"
+
+# HTML file to store Euler's response for debugging purposes
+file_html="response.html"
+
+# File with headers from a web browser with a valid session cookie
+file_headers="headers.txt"
+
+# File with cookies managed by functions from this file
+file_cookies="cookies"
+
+# PNG file to store Euler's captcha in
+file_captcha="captcha.png"
+
+# File to pass login and password to PE
+file_credentials="credentials.txt"
+
+# Captcha as jpg for jp2a
+captcha_jpg="${file_captcha%.png}.jpg"
+
 
 clear() {
 	rm -f "$file_captcha" "$captcha_jpg" "$file_html"
