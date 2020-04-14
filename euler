@@ -35,15 +35,15 @@ checkdep jp2a
 checkdep convert
 checkdep curl
 
-# Clear temporary / debug files
-clear() {
+# Clean temporary / debug files
+clean() {
 	# -f to suppress file doesn't exist warnings
 	rm -f "$file_captcha" "$captcha_jpg" "$file_html"
 }
 
 # Fetch captcha. PE server keeps track of ids of captcha you've requested and
 # expects you to submit the last one, so use this function carefully
-get_cap() {
+get_captcha() {
 	curl -s "$euler/captcha/show_captcha.php?" \
 		-H @"$file_headers" --cookie "$file_cookies" -o "$file_captcha"
 
@@ -53,7 +53,7 @@ get_cap() {
 
 
 # Download and show HTML for the account tab for debugging purposes
-acc() {
+account() {
 	curl "$euler/account" \
 	        --compressed -sH @"$file_headers" --cookie "$file_cookies" \
 		| vim -
@@ -61,6 +61,10 @@ acc() {
 
 # Download a question from Project Euler
 prob() {
+	if [[ $# -eq 0 ]] ;then
+		echo "usage: euler prob <problem-number>"
+	fi
+
 	curl "$euler/problem=$1" -s \
 	        | sed -n '/<div class="problem_content"/,/<\/div>/p' \
 		| sed '1d; $d' \
@@ -93,10 +97,10 @@ login() {
 	user="$(head -1 $file_credentials | head -c -1)"
 	pass="$(tail -1 $file_credentials | head -c -1)"
 
-	curl "$euler/captcha/show_captcha.php?" \
-	        --cookie-jar "$file_cookies" -o "$file_captcha" -s
+	#curl "$euler/captcha/show_captcha.php?" \
+	#        --cookie-jar "$file_cookies" -o "$file_captcha" -s
 
-	view_captcha
+	get_captcha
 
 	read -p "Enter captcha:" cap
 
@@ -124,7 +128,7 @@ submit() {
 	fi
 
 	read -p "Enter problem number:" prob
-	tok=$(get_submit_token $prob)
+	tok=$(token $prob)
 	if [ $? -eq 1 ]; then
 		echo "Unable to get a submit token"
 		exit 1
@@ -132,8 +136,7 @@ submit() {
 
 	read -p "Enter answer:" ans
 
-	fetch_captcha
-	view_captcha
+	get_captcha
 	read -p "Enter captcha:" cap
 	rm "$file_captcha"
 
@@ -167,8 +170,13 @@ submit() {
 if [[ $# -eq 0 ]] ;then
 	echo "usage: euler <command>"
 	echo ""
-	echo "these are commands:"
-	echo ""
+	echo "these are acceptable commands:"
+	echo "  clean - remove captchas and a debugging html doc $file_html"
+	echo "  get_captcha - fetch captcha and show it as an ASCII-art image"
+	echo "  account - download and show the Account tab to check if you're logged in"
+	echo "  prob - show question"
+	echo "  login - login to Project Euler using credentials from $file_credentials file"
+	echo "  submit - submit a solution to a problem"
 	exit 1
 fi
 
