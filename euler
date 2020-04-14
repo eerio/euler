@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # URL to Project Euler's website
 euler="https://projecteuler.net"
@@ -64,7 +64,7 @@ get_submit_token() {
 	fi
 }
 
-euler_login() {
+login() {
 	if [ ! -f $file_credentials ]; then
 		echo "No credentials file $file_credentials!"
 		return
@@ -133,4 +133,15 @@ submit_answer() {
 		echo "Unknown error. Check $file_html and look what's going on"
 	fi
 }
+
+if declare -f "${1}__$2" >/dev/null; then
+	func="${1}__$2"
+	shift; shift    # pop $1 and $2 off the argument list
+	"$func" "$@"    # invoke our named function w/ all remaining arguments
+elif declare -f "$1" >/dev/null 2>&1; then
+	"$@"
+else
+	echo "Neither function $1 nor subcommand ${1}__$2 recognized" >&2
+	exit 1
+fi
 
