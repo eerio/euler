@@ -1,3 +1,5 @@
+#!/bin/sh
+
 euler="https://projecteuler.net"
 file_html="response.html"
 file_headers="headers.txt"
