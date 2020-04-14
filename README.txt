@@ -11,7 +11,7 @@ auxiliary scripts
 
 
 Installation:
-Dependencies: imagemagick, jp2a, moreutils
+Dependencies: imagemagick, jp2a, moreutils, curl
 
 If you want to use login.sh script, put your creds
 to credentials.txt using the following format:
