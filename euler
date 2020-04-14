@@ -41,34 +41,26 @@ clear() {
 	rm -f "$file_captcha" "$captcha_jpg" "$file_html"
 }
 
-# Show captcha fetched with fetch_captcha() as an ASCII-art image
-view_captcha() {
-	if [ ! -f "$file_captcha" ]; then
-		echo "PNG file with Euler's captcha, $file_captcha, does not exist"
-		exit 1
-	fi
+# Fetch captcha. PE server keeps track of ids of captcha you've requested and
+# expects you to submit the last one, so use this function carefully
+get_cap() {
+	curl -s "$euler/captcha/show_captcha.php?" \
+		-H @"$file_headers" --cookie "$file_cookies" -o "$file_captcha"
 
 	convert "$file_captcha" "$captcha_jpg"
 	jp2a "$captcha_jpg" -z --color --chars='..00xx@@'
 }
 
-# Fetch captcha. PE server keeps track of ids of captcha you've requested and
-# expects you to submit the last one, so use this function carefully
-fetch_captcha() {
-	curl -s "$euler/captcha/show_captcha.php?" \
-		-H @"$file_headers" --cookie "$file_cookies" -o "$file_captcha"
-}
-
 
 # Download and show HTML for the account tab for debugging purposes
-get_account_tab() {
+acc() {
 	curl "$euler/account" \
 	        --compressed -sH @"$file_headers" --cookie "$file_cookies" \
 		| vim -
 }
 
 # Download a question from Project Euler
-get_question() {
+prob() {
 	curl "$euler/problem=$1" -s \
 	        | sed -n '/<div class="problem_content"/,/<\/div>/p' \
 		| sed '1d; $d' \
@@ -76,7 +68,7 @@ get_question() {
 }
 
 # Get a random token to submit a solution to a problem
-get_submit_token() {
+token() {
 	result=$(curl "$euler/problem=$1" \
 		--compressed -s -H @"$file_headers" --cookie "$file_cookies" \
 		| sed 's/.*name=\"submit_token\" value=\"\([0-9a-z]*\)\".*/\1/p' -n)
@@ -122,7 +114,7 @@ login() {
 }
 
 # Submit a solution to a problem
-submit_answer() {
+submit() {
 	if [ ! -f $file_headers ]; then
 		echo "No headers file $file_headers!"
 		exit 1
@@ -173,7 +165,10 @@ submit_answer() {
 }
 
 if [[ $# -eq 0 ]] ;then
-	echo 'no args!'
+	echo "usage: euler <command>"
+	echo ""
+	echo "these are commands:"
+	echo ""
 	exit 1
 fi
 
