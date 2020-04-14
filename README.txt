@@ -7,7 +7,7 @@ OCR later, for now I want these scripts to be limited,
 but reliable), but it's still pretty convenient to use
 
 Installation:
-Dependencies: imagemagick, jp2a, moreutils, curl
+Dependencies: imagemagick, jp2a, curl
 
 If you want to use the login function, put your creds
 to credentials.txt using the following format:
@@ -18,35 +18,38 @@ and use its developer tools to find the headers of
 requests sent (including the cookie with your session
 ID) and copy them into headers.txt
 
+The default way is using headers with session ID stripped
+(e.g. these provided in this repo) + a valid cookie (e.g.
+obtained by running `euler login`)
 
 How to test:
 1. fetch some questions
+$ ./euler prob 7
+By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13,
+we can see that the 6th prime is 13. What is the 10 001st prime number?
 
-$ get_question 7
-By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.
-What is the 10 001st prime number?
+2. fetch account tab - it should be a generic html doc
+   with options like 'Sign in' etc
+$ ./euler account
 
-2. fetch account tab - it should be a generic html doc with options like 'Sign in' etc
-$ get_account_tab
-Vim: Reading from stdin...
+3. sign in to Project Euler
+$ ./euler login
 
-3. login
-4. fetch account tab again - there SHOLD be your info
-5. give some stupid answers to a few questions
+4. fetch account tab again - there SHOLD be some settings to set etc.
+5. give some stupid answers to a few questions and check if you get to a point
+   where it tells you that the answer is invalid (or even valid if you're
+   lucky enough :p)
+$ ./euler submit
+Enter problem number:69
+Enter answer:420
+<ASCII-art>
+Enter captcha:25348
+Incorrect!
 
 Usage notes:
-You have to source the functions from ./util file
-by `. util` executed in the root dir of this repo
-
-Make sure to use `get_submit_token $prob_n` only on
-problems you haven't answered yet - there's no submit
-token for already answered problems. It doesn't break
-anything, but no output might suggest that you aren't
-logged in or the script doesn't work, whereas probably
-it just couldn't have worked
 
 If you're not sure if you're logged in, try to fetch
-the /account tab using `fetch_account_tab`. After taking
+the /account tab using `./euler account`. After taking
 a look at the fetched HTML, you should be able to tell.
 
 You can either {use some casual browser headers in
@@ -58,8 +61,7 @@ here is normal headers + a cookie
 
 Examples:
 
-$ .
-$ get_question 2
+$ ./euler prob 2
 Each new term in the Fibonacci sequence is generated 
 by adding the previous two terms. By starting with 1 
 and 2, the first 10 terms will be:
@@ -69,7 +71,7 @@ whose values do not exceed four million, find the sum
 of the even-valued terms.
 
 
-$ submit_answer
+$ ./euler submit
 Type problem number:11
 Type answer:666
 <HERE COMES AN ASCII-ART CAPTCHA!>
