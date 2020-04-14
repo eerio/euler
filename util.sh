@@ -15,3 +15,9 @@ fetch_captcha() {
 		-H @"$file_headers" --cookie "$file_cookies" -o "$file_captcha"
 }
 
+get_account_tab() {
+	curl "$euler/account" \
+	        --compressed -sH @"$file_headers" --cookie "$file_cookies" \
+		| vim -
+}
+
