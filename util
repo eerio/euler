@@ -2,7 +2,7 @@
 source config.sh
 
 clear() {
-	rm "$file_captcha" "$captcha_jpg" "$file_html"
+	rm -f "$file_captcha" "$captcha_jpg" "$file_html"
 }
 
 view_captcha() {
