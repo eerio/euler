@@ -10,3 +10,8 @@ view_captcha() {
 	jp2a "$captcha_jpg" -z --color --chars='..00xx@@'
 }
 
+fetch_captcha() {
+	curl -s "$euler/captcha/show_captcha.php?" \
+		-H @"$file_headers" --cookie "$file_cookies" -o "$file_captcha"
+}
+
