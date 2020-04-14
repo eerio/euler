@@ -2,25 +2,25 @@
 # bash required to use `declare`
 
 # URL to Project Euler's website
-euler="https://projecteuler.net"
+URL_EULER="https://projecteuler.net"
 
 # HTML file to store Euler's response for debugging purposes
-file_html="response.html"
+FILE_HTML="response.html"
 
 # File with headers from a web browser with a valid session cookie
-file_headers="headers.txt"
+FILE_HEADERS="headers.txt"
 
 # File with cookies managed by functions from this file
-file_cookies="cookies"
+FILE_COOKIES="cookies"
 
 # PNG file to store Euler's captcha in
-file_captcha="captcha.png"
+FILE_CAPTCHA="captcha.png"
 
 # File to pass login and password to PE
-file_credentials="credentials.txt"
+FILE_CREDENTIALS="credentials.txt"
 
 # Captcha as jpg for jp2a
-captcha_jpg="${file_captcha%.png}.jpg"
+FILE_CAPTCHAJPG="${FILE_CAPTCHA%.png}.jpg"
 
 
 checkdep() {
@@ -38,20 +38,20 @@ checkdep curl
 # Clean temporary / debug files
 clean() {
 	# -f to suppress file doesn't exist warnings
-	rm -f "$file_captcha" "$captcha_jpg" "$file_html"
+	rm -f "$FILE_CAPTCHA" "$FILE_CAPTCHAJPG" "$FILE_HTML"
 }
 
 # I just need it separated; login() has to have it explicitly
 view_captcha() {
-	convert "$file_captcha" "$captcha_jpg"
-	jp2a "$captcha_jpg" -z --color --chars='..00xx@@'
+	convert "$FILE_CAPTCHA" "$FILE_CAPTCHAJPG"
+	jp2a "$FILE_CAPTCHAJPG" -z --color --chars='..00xx@@'
 }
 
 # Fetch captcha. PE server keeps track of ids of captcha you've requested and
 # expects you to submit the last one, so use this function carefully
 get_captcha() {
-	curl -s "$euler/captcha/show_captcha.php?" \
-		-H @"$file_headers" --cookie "$file_cookies" -o "$file_captcha"
+	curl -s "$URL_EULER/captcha/show_captcha.php?" \
+		-H @"$FILE_HEADERS" --cookie "$FILE_COOKIES" -o "$FILE_CAPTCHA"
 
 	view_captcha
 }
@@ -59,8 +59,8 @@ get_captcha() {
 
 # Download and show HTML for the account tab for debugging purposes
 account() {
-	curl "$euler/account" \
-	        --compressed -sH @"$file_headers" --cookie "$file_cookies" \
+	curl "$URL_EULER/account" \
+	        --compressed -sH @"$FILE_HEADERS" --cookie "$FILE_COOKIES" \
 		| vim -
 }
 
@@ -70,7 +70,8 @@ prob() {
 		echo "usage: euler prob <problem-number>"
 	fi
 
-	curl "$euler/problem=$1" -s \
+	curl "$URL_EULER/problem=$1" -s \
+		| tee $FILE_HTML \
 	        | sed -n '/<div class="problem_content"/,/<\/div>/p' \
 		| sed '1d; $d' \
 		| sed 's/<[^>]*>//g'
@@ -78,8 +79,8 @@ prob() {
 
 # Get a random token to submit a solution to a problem
 token() {
-	result=$(curl "$euler/problem=$1" \
-		--compressed -s -H @"$file_headers" --cookie "$file_cookies" \
+	result=$(curl "$URL_EULER/problem=$1" \
+		--compressed -s -H @"$FILE_HEADERS" --cookie "$FILE_COOKIES" \
 		| sed 's/.*name=\"submit_token\" value=\"\([0-9a-z]*\)\".*/\1/p' -n)
 	
 	if [ -z "$result" ]
@@ -94,38 +95,38 @@ token() {
 
 # Login to Project Euler using credentials from a file
 login() {
-	if [ ! -f $file_credentials ]; then
-		echo "No credentials file $file_credentials!"
+	if [ ! -f $FILE_CREDENTIALS ]; then
+		echo "No credentials file $FILE_CREDENTIALS!"
 		exit 1
 	fi
-	user="$(head -1 $file_credentials | head -c -1)"
-	pass="$(tail -1 $file_credentials | head -c -1)"
+	user="$(head -1 $FILE_CREDENTIALS | head -c -1)"
+	pass="$(tail -1 $FILE_CREDENTIALS | head -c -1)"
 
-	curl "$euler/captcha/show_captcha.php?" \
-	        --cookie-jar "$file_cookies" -o "$file_captcha" -s
+	curl "$URL_EULER/captcha/show_captcha.php?" \
+	        --cookie-jar "$FILE_COOKIES" -o "$FILE_CAPTCHA" -s
 	view_captcha
 	read -p "Enter captcha:" cap
 
-	curl "$euler/sign_in" \
-	        --cookie "$file_cookies"  -L -o "$file_html" -s \
+	curl "$URL_EULER/sign_in" \
+	        --cookie "$FILE_COOKIES"  -L -o "$FILE_HTML" -s \
 		-d "username=$user&password=$pass&captcha=$cap&sign_in=Sign+In"
 
-	if grep -q "Sign in successful" "$file_html"; then
+	if grep -q "Sign in successful" "$FILE_HTML"; then
 	        echo "Sign in successful"
 		exit 0
 	else
-		echo "Something went wrong. Look at the content of $file_html"
+		echo "Something went wrong. Look at the content of $FILE_HTML"
 		exit 1
 	fi
 }
 
 # Submit a solution to a problem
 submit() {
-	if [ ! -f $file_headers ]; then
-		echo "No headers file $file_headers!"
+	if [ ! -f $FILE_HEADERS ]; then
+		echo "No headers file $FILE_HEADERS!"
 		exit 1
-	elif [ ! -f $file_cookies ]; then
-		echo "No cookies file $file_cookies!"
+	elif [ ! -f $FILE_COOKIES ]; then
+		echo "No cookies file $FILE_COOKIES!"
 		exit 1
 	fi
 
@@ -140,31 +141,31 @@ submit() {
 
 	get_captcha
 	read -p "Enter captcha:" cap
-	rm "$file_captcha"
+	rm "$FILE_CAPTCHA"
 
 
 	data="guess_$prob=$ans&submit_token=$tok&captcha=$cap"
 
-	curl "$euler/problem=$prob" \
-		-H @"$file_headers" --cookie "$file_cookies" \
+	curl "$URL_EULER/problem=$prob" \
+		-H @"$FILE_HEADERS" --cookie "$FILE_COOKIES" \
 		-d "$data" \
-		--compressed -Ls -o "$file_html"
+		--compressed -Ls -o "$FILE_HTML"
 
 
-	if grep -q "<p>Sorry, but the answer you gave appears to be incorrect.</p>" "$file_html"; then
+	if grep -q "<p>Sorry, but the answer you gave appears to be incorrect.</p>" "$FILE_HTML"; then
 		echo "Incorrect!"
 		exit 1
-	elif grep -q "<p>Congratulations, the answer you gave to problem $prob is correct.</p>" "$file_html"; then
+	elif grep -q "<p>Congratulations, the answer you gave to problem $prob is correct.</p>" "$FILE_HTML"; then
 		echo "Correct!"
 		exit 0
-	elif grep -q "An error occurred whilst trying to submit your guess<br>Please try again" "$file_html"; then
+	elif grep -q "An error occurred whilst trying to submit your guess<br>Please try again" "$FILE_HTML"; then
 		echo "An error occured :("
 		exit 1
-	elif grep -q '<div id="message" class="noprint">The confirmation code you entered was not valid</div>' "$file_html"; then
+	elif grep -q '<div id="message" class="noprint">The confirmation code you entered was not valid</div>' "$FILE_HTML"; then
 		echo "Invalid captcha"
 		exit 1
 	else
-		echo "Unknown error. Check $file_html and look what's going on"
+		echo "Unknown error. Check $FILE_HTML and look what's going on"
 		exit 1
 	fi
 }
@@ -173,11 +174,11 @@ if [[ $# -eq 0 ]] ;then
 	echo "usage: euler <command>"
 	echo ""
 	echo "these are acceptable commands:"
-	echo "  clean - remove captchas and a debugging html doc $file_html"
+	echo "  clean - remove captchas and a debugging html doc $FILE_HTML"
 	echo "  get_captcha - fetch captcha and show it as an ASCII-art image"
 	echo "  account - download and show the Account tab to check if you're logged in"
 	echo "  prob - show question"
-	echo "  login - login to Project Euler using credentials from $file_credentials file"
+	echo "  login - login to Project Euler using credentials from $FILE_CREDENTIALS file"
 	echo "  submit - submit a solution to a problem"
 	exit 1
 fi
