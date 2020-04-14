@@ -43,7 +43,7 @@ get_submit_token() {
 	fi
 }
 
-login() {
+euler_login() {
 	user="$(head -1 $file_credentials | head -c -1)"
 	pass="$(tail -1 $file_credentials | head -c -1)"
 
@@ -77,8 +77,8 @@ submit_answer() {
 
 	read -p "Enter answer:" ans
 
-	fetch_captcha()
-	view_captcha()
+	fetch_captcha
+	view_captcha
 	read -p "Enter captcha:" cap
 	rm "$file_captcha"
 
