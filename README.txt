@@ -1,10 +1,14 @@
-These are my solutions to the Project Euler exercises
+Main file: ./euler
 
-Also, there are my scripts to automatically log into
+There are my scripts to automatically log into
 the website, fetch problems and submit answers. The
 captcha has to be solved by user (maybe I'll add some
 OCR later, for now I want these scripts to be limited,
 but reliable), but it's still pretty convenient to use
+
+Note: you can use all of the functions from terminal,
+no need to use GUI even for Captcha, since it'll be
+displayed as an ASCII-art
 
 Installation:
 Dependencies: imagemagick, jp2a, curl
